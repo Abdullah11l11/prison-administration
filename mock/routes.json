@@ -1,0 +1,14 @@
+{
+  "/api/prisoners": "/prisoners",
+  "/api/cells": "/cells",
+  "/api/cases": "/cases",
+  "/api/crime-records": "/crimeRecords",
+  "/api/cell-assignments": "/cellAssignments",
+  "/api/visitors": "/visitors",
+  "/api/visits": "/visits",
+  "/api/incidents": "/incidents",
+  "/api/health-records": "/healthRecords",
+  "/api/staff": "/staff",
+  "/api/users": "/userAccounts",
+  "/api/documents": "/documents"
+}

@@ -1,0 +1,689 @@
+{
+  "cells": [
+    {
+      "id": 1,
+      "cellId": 1,
+      "blockName": "A",
+      "securityLevel": "Medium",
+      "cellNumber": "A-101",
+      "capacity": 2,
+      "currentOccupancy": 2,
+      "cellType": "Standard",
+      "notes": "Near workshop"
+    },
+    {
+      "id": 2,
+      "cellId": 2,
+      "blockName": "A",
+      "securityLevel": "Medium",
+      "cellNumber": "A-102",
+      "capacity": 2,
+      "currentOccupancy": 1,
+      "cellType": "Standard",
+      "notes": ""
+    },
+    {
+      "id": 3,
+      "cellId": 3,
+      "blockName": "B",
+      "securityLevel": "High",
+      "cellNumber": "B-201",
+      "capacity": 1,
+      "currentOccupancy": 1,
+      "cellType": "Isolation",
+      "notes": "24/7 camera"
+    },
+    {
+      "id": 4,
+      "cellId": 4,
+      "blockName": "C",
+      "securityLevel": "Low",
+      "cellNumber": "C-301",
+      "capacity": 4,
+      "currentOccupancy": 2,
+      "cellType": "Dorm",
+      "notes": ""
+    }
+  ],
+  "staff": [
+    {
+      "id": 1,
+      "staffId": 1,
+      "fullName": "Samer Al-Khatib",
+      "nationalId": "STF-0001",
+      "position": "Warden",
+      "phone": "+31-6-1000-0001",
+      "email": "samer.khatib@prison.local",
+      "status": "Active",
+      "notes": ""
+    },
+    {
+      "id": 2,
+      "staffId": 2,
+      "fullName": "Rami Haddad",
+      "nationalId": "STF-0002",
+      "position": "Guard",
+      "phone": "+31-6-1000-0002",
+      "email": "rami.haddad@prison.local",
+      "status": "Active",
+      "notes": "Night shift"
+    },
+    {
+      "id": 3,
+      "staffId": 3,
+      "fullName": "Dr. Lina Mansour",
+      "nationalId": "STF-0003",
+      "position": "Doctor",
+      "phone": "+31-6-1000-0003",
+      "email": "lina.mansour@prison.local",
+      "status": "Active",
+      "notes": "General practitioner"
+    },
+    {
+      "id": 4,
+      "staffId": 4,
+      "fullName": "Hala Nasser",
+      "nationalId": "STF-0004",
+      "position": "Admin",
+      "phone": "+31-6-1000-0004",
+      "email": "hala.nasser@prison.local",
+      "status": "Active",
+      "notes": ""
+    }
+  ],
+  "userAccounts": [
+    {
+      "id": 1,
+      "userId": 1,
+      "staffId": 1,
+      "username": "warden.samer",
+      "passwordHash": "$2b$10$placeholder",
+      "role": "Warden",
+      "isActive": true,
+      "lastLogin": "2025-12-17T08:41:00"
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "staffId": 2,
+      "username": "guard.rami",
+      "passwordHash": "$2b$10$placeholder",
+      "role": "Guard",
+      "isActive": true,
+      "lastLogin": "2025-12-17T19:10:00"
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "staffId": 4,
+      "username": "admin.hala",
+      "passwordHash": "$2b$10$placeholder",
+      "role": "Admin",
+      "isActive": true,
+      "lastLogin": "2025-12-16T10:22:00"
+    }
+  ],
+  "prisoners": [
+    {
+      "id": 1,
+      "prisonerId": 1,
+      "fullName": "Ahmad Al-Masri",
+      "nationalId": "P-100001",
+      "gender": "Male",
+      "dateOfBirth": "1991-04-12",
+      "admissionDate": "2024-11-05",
+      "status": "Incarcerated",
+      "riskLevel": "Medium",
+      "currentCellId": 1,
+      "notes": "Good behavior last 60 days"
+    },
+    {
+      "id": 2,
+      "prisonerId": 2,
+      "fullName": "Khaled Barakat",
+      "nationalId": "P-100002",
+      "gender": "Male",
+      "dateOfBirth": "1987-09-23",
+      "admissionDate": "2023-06-18",
+      "status": "Incarcerated",
+      "riskLevel": "High",
+      "currentCellId": 3,
+      "notes": "Isolation due to incident history"
+    },
+    {
+      "id": 3,
+      "prisonerId": 3,
+      "fullName": "Yousef Darwish",
+      "nationalId": "P-100003",
+      "gender": "Male",
+      "dateOfBirth": "1998-01-30",
+      "admissionDate": "2025-02-10",
+      "status": "Incarcerated",
+      "riskLevel": "Low",
+      "currentCellId": 4,
+      "notes": "First-time offender"
+    },
+    {
+      "id": 4,
+      "prisonerId": 4,
+      "fullName": "Mariam Saleh",
+      "nationalId": "P-100004",
+      "gender": "Female",
+      "dateOfBirth": "1993-07-08",
+      "admissionDate": "2022-03-27",
+      "status": "Incarcerated",
+      "riskLevel": "Medium",
+      "currentCellId": 2,
+      "notes": "Enrolled in education program"
+    },
+    {
+      "id": 5,
+      "prisonerId": 5,
+      "fullName": "Tareq Zain",
+      "nationalId": "P-100005",
+      "gender": "Male",
+      "dateOfBirth": "1979-12-02",
+      "admissionDate": "2021-10-14",
+      "status": "Incarcerated",
+      "riskLevel": "Medium",
+      "currentCellId": 1,
+      "notes": "Chronic hypertension"
+    },
+    {
+      "id": 6,
+      "prisonerId": 6,
+      "fullName": "Nour Al-Amin",
+      "nationalId": "P-100006",
+      "gender": "Female",
+      "dateOfBirth": "2000-05-19",
+      "admissionDate": "2025-08-01",
+      "status": "Incarcerated",
+      "riskLevel": "Low",
+      "currentCellId": 4,
+      "notes": "Needs interpreter sometimes"
+    }
+  ],
+  "cellAssignments": [
+    {
+      "id": 1,
+      "assignmentId": 1,
+      "prisonerId": 1,
+      "cellId": 1,
+      "startDate": "2025-09-01",
+      "endDate": null,
+      "reason": "Routine assignment"
+    },
+    {
+      "id": 2,
+      "assignmentId": 2,
+      "prisonerId": 2,
+      "cellId": 3,
+      "startDate": "2025-07-12",
+      "endDate": null,
+      "reason": "Disciplinary isolation"
+    },
+    {
+      "id": 3,
+      "assignmentId": 3,
+      "prisonerId": 3,
+      "cellId": 4,
+      "startDate": "2025-02-10",
+      "endDate": null,
+      "reason": "Intake assignment"
+    },
+    {
+      "id": 4,
+      "assignmentId": 4,
+      "prisonerId": 4,
+      "cellId": 2,
+      "startDate": "2024-05-03",
+      "endDate": null,
+      "reason": "Moved closer to education wing"
+    },
+    {
+      "id": 5,
+      "assignmentId": 5,
+      "prisonerId": 5,
+      "cellId": 1,
+      "startDate": "2023-01-15",
+      "endDate": null,
+      "reason": "Medical monitoring proximity"
+    },
+    {
+      "id": 6,
+      "assignmentId": 6,
+      "prisonerId": 6,
+      "cellId": 4,
+      "startDate": "2025-08-01",
+      "endDate": null,
+      "reason": "Intake assignment"
+    }
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "caseId": 1,
+      "caseNumber": "C-2024-0007",
+      "courtName": "Amsterdam District Court",
+      "caseType": "Theft",
+      "status": "Closed",
+      "openDate": "2024-08-10",
+      "closeDate": "2024-10-22"
+    },
+    {
+      "id": 2,
+      "caseId": 2,
+      "caseNumber": "C-2023-0114",
+      "courtName": "Amsterdam District Court",
+      "caseType": "Assault",
+      "status": "Closed",
+      "openDate": "2023-02-03",
+      "closeDate": "2023-05-19"
+    },
+    {
+      "id": 3,
+      "caseId": 3,
+      "caseNumber": "C-2025-0031",
+      "courtName": "Haarlem Court",
+      "caseType": "Fraud",
+      "status": "Open",
+      "openDate": "2025-01-11",
+      "closeDate": null
+    },
+    {
+      "id": 4,
+      "caseId": 4,
+      "caseNumber": "C-2022-0202",
+      "courtName": "Rotterdam Court",
+      "caseType": "Drug Possession",
+      "status": "Closed",
+      "openDate": "2021-12-09",
+      "closeDate": "2022-02-28"
+    },
+    {
+      "id": 5,
+      "caseId": 5,
+      "caseNumber": "C-2021-0099",
+      "courtName": "Utrecht Court",
+      "caseType": "Burglary",
+      "status": "Closed",
+      "openDate": "2021-04-01",
+      "closeDate": "2021-09-30"
+    },
+    {
+      "id": 6,
+      "caseId": 6,
+      "caseNumber": "C-2025-0108",
+      "courtName": "Amsterdam District Court",
+      "caseType": "Cybercrime",
+      "status": "Open",
+      "openDate": "2025-07-15",
+      "closeDate": null
+    }
+  ],
+  "crimeRecords": [
+    {
+      "id": 1,
+      "crimeId": 1,
+      "prisonerId": 1,
+      "caseId": 1,
+      "crimeTitle": "Shoplifting",
+      "crimeDetails": "Repeated shoplifting from retail stores.",
+      "crimeDate": "2024-07-28",
+      "sentenceYears": 1,
+      "sentenceMonths": 6,
+      "sentenceStart": "2024-11-05",
+      "sentenceEnd": "2026-05-05",
+      "status": "Serving"
+    },
+    {
+      "id": 2,
+      "crimeId": 2,
+      "prisonerId": 2,
+      "caseId": 2,
+      "crimeTitle": "Aggravated assault",
+      "crimeDetails": "Assault causing serious injury.",
+      "crimeDate": "2023-01-17",
+      "sentenceYears": 5,
+      "sentenceMonths": 0,
+      "sentenceStart": "2023-06-18",
+      "sentenceEnd": "2028-06-18",
+      "status": "Serving"
+    },
+    {
+      "id": 3,
+      "crimeId": 3,
+      "prisonerId": 3,
+      "caseId": 3,
+      "crimeTitle": "Identity fraud",
+      "crimeDetails": "Use of forged identity documents.",
+      "crimeDate": "2024-12-03",
+      "sentenceYears": 2,
+      "sentenceMonths": 0,
+      "sentenceStart": "2025-02-10",
+      "sentenceEnd": "2027-02-10",
+      "status": "Serving"
+    },
+    {
+      "id": 4,
+      "crimeId": 4,
+      "prisonerId": 4,
+      "caseId": 4,
+      "crimeTitle": "Drug possession",
+      "crimeDetails": "Possession with intent to distribute (small scale).",
+      "crimeDate": "2021-11-18",
+      "sentenceYears": 3,
+      "sentenceMonths": 0,
+      "sentenceStart": "2022-03-27",
+      "sentenceEnd": "2025-03-27",
+      "status": "Serving"
+    },
+    {
+      "id": 5,
+      "crimeId": 5,
+      "prisonerId": 5,
+      "caseId": 5,
+      "crimeTitle": "Residential burglary",
+      "crimeDetails": "Unauthorized entry and theft from residence.",
+      "crimeDate": "2021-03-11",
+      "sentenceYears": 4,
+      "sentenceMonths": 0,
+      "sentenceStart": "2021-10-14",
+      "sentenceEnd": "2025-10-14",
+      "status": "Serving"
+    },
+    {
+      "id": 6,
+      "crimeId": 6,
+      "prisonerId": 6,
+      "caseId": 6,
+      "crimeTitle": "Unauthorized system access",
+      "crimeDetails": "Unauthorized access to protected systems.",
+      "crimeDate": "2025-06-30",
+      "sentenceYears": 1,
+      "sentenceMonths": 0,
+      "sentenceStart": "2025-08-01",
+      "sentenceEnd": "2026-08-01",
+      "status": "Serving"
+    }
+  ],
+  "visitors": [
+    {
+      "id": 1,
+      "visitorId": 1,
+      "fullName": "Omar Al-Masri",
+      "nationalId": "V-900001",
+      "phone": "+31-6-2000-0001",
+      "relationshipToPrisoner": "Brother",
+      "notes": ""
+    },
+    {
+      "id": 2,
+      "visitorId": 2,
+      "fullName": "Fatima Barakat",
+      "nationalId": "V-900002",
+      "phone": "+31-6-2000-0002",
+      "relationshipToPrisoner": "Mother",
+      "notes": ""
+    },
+    {
+      "id": 3,
+      "visitorId": 3,
+      "fullName": "Sara Darwish",
+      "nationalId": "V-900003",
+      "phone": "+31-6-2000-0003",
+      "relationshipToPrisoner": "Sister",
+      "notes": "Needs appointment confirmation"
+    },
+    {
+      "id": 4,
+      "visitorId": 4,
+      "fullName": "Nadia Saleh",
+      "nationalId": "V-900004",
+      "phone": "+31-6-2000-0004",
+      "relationshipToPrisoner": "Lawyer",
+      "notes": "Bar ID verified"
+    },
+    {
+      "id": 5,
+      "visitorId": 5,
+      "fullName": "Hussein Zain",
+      "nationalId": "V-900005",
+      "phone": "+31-6-2000-0005",
+      "relationshipToPrisoner": "Son",
+      "notes": ""
+    }
+  ],
+  "visits": [
+    {
+      "id": 1,
+      "visitId": 1,
+      "prisonerId": 1,
+      "visitorId": 1,
+      "visitDate": "2025-12-05T14:00:00",
+      "visitType": "Family",
+      "status": "Completed",
+      "notes": ""
+    },
+    {
+      "id": 2,
+      "visitId": 2,
+      "prisonerId": 2,
+      "visitorId": 2,
+      "visitDate": "2025-12-01T10:30:00",
+      "visitType": "Family",
+      "status": "Completed",
+      "notes": "Shortened due to behavior"
+    },
+    {
+      "id": 3,
+      "visitId": 3,
+      "prisonerId": 3,
+      "visitorId": 3,
+      "visitDate": "2025-12-12T16:15:00",
+      "visitType": "Family",
+      "status": "Approved",
+      "notes": ""
+    },
+    {
+      "id": 4,
+      "visitId": 4,
+      "prisonerId": 4,
+      "visitorId": 4,
+      "visitDate": "2025-12-18T09:00:00",
+      "visitType": "Legal",
+      "status": "Completed",
+      "notes": "Case update"
+    },
+    {
+      "id": 5,
+      "visitId": 5,
+      "prisonerId": 5,
+      "visitorId": 5,
+      "visitDate": "2025-11-20T13:00:00",
+      "visitType": "Family",
+      "status": "Completed",
+      "notes": ""
+    }
+  ],
+  "incidents": [
+    {
+      "id": 1,
+      "incidentId": 1,
+      "prisonerId": 2,
+      "reportedByStaffId": 2,
+      "incidentType": "Fight",
+      "incidentDate": "2025-07-10T21:40:00",
+      "description": "Altercation with another inmate.",
+      "severity": "High",
+      "actionTaken": "Isolation and review",
+      "status": "Closed"
+    },
+    {
+      "id": 2,
+      "incidentId": 2,
+      "prisonerId": 1,
+      "reportedByStaffId": 2,
+      "incidentType": "Contraband",
+      "incidentDate": "2025-10-02T18:05:00",
+      "description": "Prohibited item found during search.",
+      "severity": "Medium",
+      "actionTaken": "Confiscated, warning issued",
+      "status": "Closed"
+    },
+    {
+      "id": 3,
+      "incidentId": 3,
+      "prisonerId": 6,
+      "reportedByStaffId": 1,
+      "incidentType": "Medical",
+      "incidentDate": "2025-09-14T11:20:00",
+      "description": "Fainted during roll call.",
+      "severity": "Low",
+      "actionTaken": "Sent to clinic",
+      "status": "Closed"
+    }
+  ],
+  "healthRecords": [
+    {
+      "id": 1,
+      "healthRecordId": 1,
+      "prisonerId": 1,
+      "recordType": "Checkup",
+      "recordDate": "2025-11-08T09:30:00",
+      "doctorId": 3,
+      "diagnosis": "Seasonal allergy",
+      "treatment": "Antihistamines",
+      "status": "Open",
+      "notes": "Follow up in 2 weeks"
+    },
+    {
+      "id": 2,
+      "healthRecordId": 2,
+      "prisonerId": 2,
+      "recordType": "Psych",
+      "recordDate": "2025-08-02T15:00:00",
+      "doctorId": 3,
+      "diagnosis": "High stress",
+      "treatment": "Counseling referral",
+      "status": "Open",
+      "notes": "Weekly sessions"
+    },
+    {
+      "id": 3,
+      "healthRecordId": 3,
+      "prisonerId": 3,
+      "recordType": "Dental",
+      "recordDate": "2025-12-03T10:00:00",
+      "doctorId": 3,
+      "diagnosis": "Cavity",
+      "treatment": "Filling scheduled",
+      "status": "Open",
+      "notes": ""
+    },
+    {
+      "id": 4,
+      "healthRecordId": 4,
+      "prisonerId": 4,
+      "recordType": "Checkup",
+      "recordDate": "2025-10-21T14:20:00",
+      "doctorId": 3,
+      "diagnosis": "Iron deficiency",
+      "treatment": "Supplements",
+      "status": "Closed",
+      "notes": "Improved"
+    },
+    {
+      "id": 5,
+      "healthRecordId": 5,
+      "prisonerId": 5,
+      "recordType": "Chronic",
+      "recordDate": "2025-11-30T08:45:00",
+      "doctorId": 3,
+      "diagnosis": "Hypertension",
+      "treatment": "Medication adjustment",
+      "status": "Open",
+      "notes": "BP monitoring twice weekly"
+    },
+    {
+      "id": 6,
+      "healthRecordId": 6,
+      "prisonerId": 6,
+      "recordType": "Checkup",
+      "recordDate": "2025-09-14T12:10:00",
+      "doctorId": 3,
+      "diagnosis": "Dehydration",
+      "treatment": "Fluids and rest",
+      "status": "Closed",
+      "notes": ""
+    }
+  ],
+  "documents": [
+    {
+      "id": 1,
+      "documentId": 1,
+      "prisonerId": 1,
+      "caseId": 1,
+      "documentType": "Sentence",
+      "filePath": "/docs/cases/C-2024-0007/sentence.pdf",
+      "uploadedBy": 4,
+      "uploadedAt": "2024-11-06T09:00:00",
+      "notes": ""
+    },
+    {
+      "id": 2,
+      "documentId": 2,
+      "prisonerId": 2,
+      "caseId": 2,
+      "documentType": "IncidentReport",
+      "filePath": "/docs/incidents/2025-07-10-fight.pdf",
+      "uploadedBy": 2,
+      "uploadedAt": "2025-07-11T08:30:00",
+      "notes": ""
+    },
+    {
+      "id": 3,
+      "documentId": 3,
+      "prisonerId": 3,
+      "caseId": 3,
+      "documentType": "CourtNotice",
+      "filePath": "/docs/cases/C-2025-0031/notice.pdf",
+      "uploadedBy": 4,
+      "uploadedAt": "2025-02-12T13:20:00",
+      "notes": ""
+    },
+    {
+      "id": 4,
+      "documentId": 4,
+      "prisonerId": 4,
+      "caseId": 4,
+      "documentType": "Sentence",
+      "filePath": "/docs/cases/C-2022-0202/sentence.pdf",
+      "uploadedBy": 4,
+      "uploadedAt": "2022-03-29T11:45:00",
+      "notes": ""
+    },
+    {
+      "id": 5,
+      "documentId": 5,
+      "prisonerId": 5,
+      "caseId": 5,
+      "documentType": "Medical",
+      "filePath": "/docs/medical/P-100005/bp-plan.pdf",
+      "uploadedBy": 3,
+      "uploadedAt": "2025-12-01T09:10:00",
+      "notes": "Treatment plan"
+    },
+    {
+      "id": 6,
+      "documentId": 6,
+      "prisonerId": 6,
+      "caseId": 6,
+      "documentType": "CaseFile",
+      "filePath": "/docs/cases/C-2025-0108/file.pdf",
+      "uploadedBy": 4,
+      "uploadedAt": "2025-08-02T10:00:00",
+      "notes": ""
+    }
+  ]
+}
