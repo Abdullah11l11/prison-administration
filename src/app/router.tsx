@@ -1,63 +1,68 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AppShell } from './layout';
-import { LoginPage } from '@/features/auth/login-page';
-import { DashboardPage } from '@/features/dashboard/dashboard-page';
-import { PrisonersPage } from '@/features/prisoners/prisoners-page';
-import { CellsPage } from '@/features/cells/cells-page';
-import { StaffPage } from '@/features/staff/staff-page';
-import { CasesPage } from '@/features/cases/cases-page';
-import { VisitsPage } from '@/features/visits/visits-page';
-import { IncidentsPage } from '@/features/incidents/incidents-page';
-import { HealthRecordsPage } from '@/features/health-records/health-records-page';
-import { DocumentsPage } from '@/features/documents/documents-page';
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { AppShell } from "./layout";
+import { LoginPage } from "@/features/auth/login-page";
+import { RequireAuth } from "@/features/auth/route-guard";
+import { DashboardPage } from "@/features/dashboard/dashboard-page";
+import { PrisonersPage } from "@/features/prisoners/prisoners-page";
+import { CellsPage } from "@/features/cells/cells-page";
+import { StaffPage } from "@/features/staff/staff-page";
+import { CasesPage } from "@/features/cases/cases-page";
+import { VisitsPage } from "@/features/visits/visits-page";
+import { IncidentsPage } from "@/features/incidents/incidents-page";
+import { HealthRecordsPage } from "@/features/health-records/health-records-page";
+import { DocumentsPage } from "@/features/documents/documents-page";
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
+    path: "/login",
     element: <LoginPage />,
   },
   {
-    path: '/',
-    element: <AppShell />,
+    path: "/",
+    element: (
+      <RequireAuth>
+        <AppShell />
+      </RequireAuth>
+    ),
     children: [
       {
         index: true,
         element: <Navigate to="/dashboard" replace />,
       },
       {
-        path: 'dashboard',
+        path: "dashboard",
         element: <DashboardPage />,
       },
       {
-        path: 'prisoners',
+        path: "prisoners",
         element: <PrisonersPage />,
       },
       {
-        path: 'cells',
+        path: "cells",
         element: <CellsPage />,
       },
       {
-        path: 'staff',
+        path: "staff",
         element: <StaffPage />,
       },
       {
-        path: 'cases',
+        path: "cases",
         element: <CasesPage />,
       },
       {
-        path: 'visits',
+        path: "visits",
         element: <VisitsPage />,
       },
       {
-        path: 'incidents',
+        path: "incidents",
         element: <IncidentsPage />,
       },
       {
-        path: 'health',
+        path: "health",
         element: <HealthRecordsPage />,
       },
       {
-        path: 'documents',
+        path: "documents",
         element: <DocumentsPage />,
       },
     ],
