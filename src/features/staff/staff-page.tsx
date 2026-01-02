@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '@/lib/api-client';
-import type { Staff } from '@/types';
+import { useMemo, useState } from "react";
+import { AlertCircle, Loader2, Pencil, Plus, Search } from "lucide-react";
+import type { Staff } from "@/types";
+import { useStaff } from "./hooks";
 import {
   Table,
   TableBody,
@@ -8,23 +9,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, AlertCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { StaffFormDialog } from "./staff-form-dialog";
 
 export function StaffPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
 
-  const { data: staff, isLoading, error } = useQuery({
-    queryKey: ['staff'],
-    queryFn: async () => {
-      const response = await apiClient.get<Staff[]>('/api/staff');
-      return response.data;
-    },
-  });
+  const { data: staff, isLoading, error } = useStaff();
 
   const filteredStaff = useMemo(() => {
     if (!staff) return [];
@@ -63,8 +66,8 @@ export function StaffPage() {
           <CardDescription>A list of all staff members in the system</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <div className="relative">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name, position, or email..."
@@ -73,6 +76,15 @@ export function StaffPage() {
                 className="pl-8"
               />
             </div>
+            <Button
+              onClick={() => {
+                setEditingStaff(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" aria-hidden />
+              Add Staff
+            </Button>
           </div>
 
           {isLoading ? (
@@ -93,6 +105,7 @@ export function StaffPage() {
                   <TableHead>Phone</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -110,6 +123,19 @@ export function StaffPage() {
                         {member.status}
                       </Badge>
                     </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingStaff(member);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                        Edit
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -117,6 +143,16 @@ export function StaffPage() {
           )}
         </CardContent>
       </Card>
+
+      <StaffFormDialog
+        open={dialogOpen}
+        mode={editingStaff ? "edit" : "create"}
+        staff={editingStaff}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditingStaff(null);
+        }}
+      />
     </div>
   );
 }

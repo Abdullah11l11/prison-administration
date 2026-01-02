@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '@/lib/api-client';
-import type { HealthRecord } from '@/types';
+import { useMemo, useState } from "react";
+import type { HealthRecord } from "@/types";
+import { useHealthRecords } from "./hooks";
 import {
   Table,
   TableBody,
@@ -8,24 +8,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, AlertCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
-import { formatDateTime } from '@/lib/utils';
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Loader2, Pencil, Plus, Search } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
+import { HealthRecordFormDialog } from "./health-record-form-dialog";
 
 export function HealthRecordsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<HealthRecord | null>(null);
 
-  const { data: healthRecords, isLoading, error } = useQuery({
-    queryKey: ['health-records'],
-    queryFn: async () => {
-      const response = await apiClient.get<HealthRecord[]>('/api/health-records');
-      return response.data;
-    },
-  });
+  const { data: healthRecords, isLoading, error } = useHealthRecords();
 
   const filteredRecords = useMemo(() => {
     if (!healthRecords) return [];
@@ -64,8 +67,8 @@ export function HealthRecordsPage() {
           <CardDescription>Medical records and health checkups</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <div className="relative">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by type, diagnosis, or treatment..."
@@ -74,6 +77,15 @@ export function HealthRecordsPage() {
                 className="pl-8"
               />
             </div>
+            <Button
+              onClick={() => {
+                setEditingRecord(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" aria-hidden />
+              Add Record
+            </Button>
           </div>
 
           {isLoading ? (
@@ -95,6 +107,7 @@ export function HealthRecordsPage() {
                   <TableHead>Diagnosis</TableHead>
                   <TableHead>Treatment</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -113,6 +126,19 @@ export function HealthRecordsPage() {
                         {record.status}
                       </Badge>
                     </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingRecord(record);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                        Edit
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -120,6 +146,16 @@ export function HealthRecordsPage() {
           )}
         </CardContent>
       </Card>
+
+      <HealthRecordFormDialog
+        open={dialogOpen}
+        mode={editingRecord ? "edit" : "create"}
+        record={editingRecord}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditingRecord(null);
+        }}
+      />
     </div>
   );
 }

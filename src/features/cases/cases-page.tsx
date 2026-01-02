@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '@/lib/api-client';
-import type { Case } from '@/types';
+import { useMemo, useState } from "react";
+import type { Case } from "@/types";
+import { useCases } from "./hooks";
 import {
   Table,
   TableBody,
@@ -8,24 +8,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, AlertCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
-import { formatDate } from '@/lib/utils';
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Loader2, Pencil, Plus, Search } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import { CaseFormDialog } from "./case-form-dialog";
 
 export function CasesPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingCase, setEditingCase] = useState<Case | null>(null);
 
-  const { data: cases, isLoading, error } = useQuery({
-    queryKey: ['cases'],
-    queryFn: async () => {
-      const response = await apiClient.get<Case[]>('/api/cases');
-      return response.data;
-    },
-  });
+  const { data: cases, isLoading, error } = useCases();
 
   const filteredCases = useMemo(() => {
     if (!cases) return [];
@@ -64,8 +67,8 @@ export function CasesPage() {
           <CardDescription>A list of all legal cases in the system</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <div className="relative">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by case number, court, or type..."
@@ -74,6 +77,15 @@ export function CasesPage() {
                 className="pl-8"
               />
             </div>
+            <Button
+              onClick={() => {
+                setEditingCase(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" aria-hidden />
+              Add Case
+            </Button>
           </div>
 
           {isLoading ? (
@@ -94,6 +106,7 @@ export function CasesPage() {
                   <TableHead>Status</TableHead>
                   <TableHead>Open Date</TableHead>
                   <TableHead>Close Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -111,6 +124,19 @@ export function CasesPage() {
                     </TableCell>
                     <TableCell>{formatDate(c.openDate)}</TableCell>
                     <TableCell>{c.closeDate ? formatDate(c.closeDate) : '-'}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingCase(c);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                        Edit
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -118,6 +144,16 @@ export function CasesPage() {
           )}
         </CardContent>
       </Card>
+
+      <CaseFormDialog
+        open={dialogOpen}
+        mode={editingCase ? "edit" : "create"}
+        currentCase={editingCase}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditingCase(null);
+        }}
+      />
     </div>
   );
 }

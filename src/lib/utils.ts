@@ -1,24 +1,32 @@
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { clsx, type ClassValue } from "clsx"
+import { format as formatDateFns, isValid, parseISO } from "date-fns"
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+type DateInput = string | number | Date | null | undefined
+
+const toDate = (value: DateInput) => {
+  if (value === null || value === undefined) return null
+  if (value instanceof Date) return value
+  if (typeof value === "string") {
+    const parsed = parseISO(value)
+    return isValid(parsed) ? parsed : null
+  }
+  const date = new Date(value)
+  return isValid(date) ? date : null
 }
 
-export function formatDateTime(date: string | Date): string {
-  return new Date(date).toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+export function formatDate(value: DateInput, fallback = "-") {
+  const date = toDate(value)
+  if (!date) return fallback
+  return formatDateFns(date, "MMM d, yyyy")
+}
+
+export function formatDateTime(value: DateInput, fallback = "-") {
+  const date = toDate(value)
+  if (!date) return fallback
+  return formatDateFns(date, "MMM d, yyyy, h:mm a")
 }

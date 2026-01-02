@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '@/lib/api-client';
-import type { Cell } from '@/types';
+import { useMemo, useState } from "react";
+import type { Cell } from "@/types";
+import { useCells } from "./hooks";
 import {
   Table,
   TableBody,
@@ -8,23 +8,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, AlertCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Loader2, Pencil, Plus, Search } from "lucide-react";
+import { CellFormDialog } from "./cell-form-dialog";
 
 export function CellsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingCell, setEditingCell] = useState<Cell | null>(null);
 
-  const { data: cells, isLoading, error } = useQuery({
-    queryKey: ['cells'],
-    queryFn: async () => {
-      const response = await apiClient.get<Cell[]>('/api/cells');
-      return response.data;
-    },
-  });
+  const { data: cells, isLoading, error } = useCells();
 
   const filteredCells = useMemo(() => {
     if (!cells) return [];
@@ -63,8 +66,8 @@ export function CellsPage() {
           <CardDescription>Overview of all cells and their current status</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <div className="relative">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by cell number, block, or security level..."
@@ -73,6 +76,15 @@ export function CellsPage() {
                 className="pl-8"
               />
             </div>
+            <Button
+              onClick={() => {
+                setEditingCell(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" aria-hidden />
+              Add Cell
+            </Button>
           </div>
 
           {isLoading ? (
@@ -94,6 +106,7 @@ export function CellsPage() {
                   <TableHead>Capacity</TableHead>
                   <TableHead>Occupancy</TableHead>
                   <TableHead>Notes</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -114,6 +127,19 @@ export function CellsPage() {
                       </span>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{cell.notes || '-'}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingCell(cell);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                        Edit
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -121,6 +147,16 @@ export function CellsPage() {
           )}
         </CardContent>
       </Card>
+
+      <CellFormDialog
+        open={dialogOpen}
+        mode={editingCell ? "edit" : "create"}
+        cell={editingCell}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditingCell(null);
+        }}
+      />
     </div>
   );
 }
