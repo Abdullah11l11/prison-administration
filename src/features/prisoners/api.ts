@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api-client';
-import { Prisoner } from '@/types';
+import type { Prisoner } from '@/types';
 
 export const prisonersApi = {
   getAll: async (): Promise<Prisoner[]> => {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import { Case } from '@/types';
+import type { Case } from '@/types';
 import {
   Table,
   TableBody,

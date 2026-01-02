@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import { Cell } from '@/types';
+import type { Cell } from '@/types';
 import {
   Table,
   TableBody,

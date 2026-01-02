@@ -1,4 +1,4 @@
-import { Prisoner } from '@/types';
+import type { Prisoner } from '@/types';
 import {
   Sheet,
   SheetHeader,

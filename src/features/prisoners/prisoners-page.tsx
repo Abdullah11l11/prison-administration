@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { usePrisoners } from './hooks';
 import { PrisonerDetails } from './prisoner-details';
-import { Prisoner } from '@/types';
+import type { Prisoner } from '@/types';
 import {
   Table,
   TableBody,

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import { Prisoner, Cell, Staff, Incident } from '@/types';
+import type { Prisoner, Cell, Staff, Incident } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Building2, UserCog, AlertTriangle, TrendingUp } from 'lucide-react';
 

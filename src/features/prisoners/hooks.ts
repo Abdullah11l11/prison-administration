@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { prisonersApi } from './api';
-import { Prisoner } from '@/types';
+import type { Prisoner } from '@/types';
 
 export const usePrisoners = () => {
   return useQuery({
