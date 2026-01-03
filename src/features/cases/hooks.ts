@@ -31,3 +31,14 @@ export const useUpdateCase = () => {
     },
   });
 };
+
+export const useDeleteCase = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: casesApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+    },
+  });
+};

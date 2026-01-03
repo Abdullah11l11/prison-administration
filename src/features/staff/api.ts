@@ -16,4 +16,8 @@ export const staffApi = {
     const response = await apiClient.patch<Staff>(`/api/staff/${id}`, payload);
     return response.data;
   },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/api/staff/${id}`);
+  },
 };

@@ -16,4 +16,8 @@ export const visitsApi = {
     const response = await apiClient.patch<Visit>(`/api/visits/${id}`, payload);
     return response.data;
   },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/api/visits/${id}`);
+  },
 };

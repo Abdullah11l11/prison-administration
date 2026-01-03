@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Case } from "@/types";
-import { useCases } from "./hooks";
+import { useCases, useDeleteCase } from "./hooks";
 import {
   Table,
   TableBody,
@@ -27,8 +27,10 @@ export function CasesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<Case | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const { data: cases, isLoading, error } = useCases();
+  const { mutateAsync: deleteCase } = useDeleteCase();
 
   const filteredCases = useMemo(() => {
     if (!cases) return [];
@@ -125,17 +127,45 @@ export function CasesPage() {
                     <TableCell>{formatDate(c.openDate)}</TableCell>
                     <TableCell>{c.closeDate ? formatDate(c.closeDate) : '-'}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingCase(c);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingCase(c);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete case "${c.caseNumber}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(c.id);
+                              await deleteCase(c.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === c.id}
+                        >
+                          {deletingId === c.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

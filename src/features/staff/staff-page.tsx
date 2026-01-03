@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { AlertCircle, Loader2, Pencil, Plus, Search } from "lucide-react";
 import type { Staff } from "@/types";
-import { useStaff } from "./hooks";
+import { useDeleteStaff, useStaff } from "./hooks";
 import {
   Table,
   TableBody,
@@ -26,8 +26,10 @@ export function StaffPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const { data: staff, isLoading, error } = useStaff();
+  const { mutateAsync: deleteStaff } = useDeleteStaff();
 
   const filteredStaff = useMemo(() => {
     if (!staff) return [];
@@ -124,17 +126,45 @@ export function StaffPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingStaff(member);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingStaff(member);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete staff "${member.fullName}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(member.id);
+                              await deleteStaff(member.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === member.id}
+                        >
+                          {deletingId === member.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

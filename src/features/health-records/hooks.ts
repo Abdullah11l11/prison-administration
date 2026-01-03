@@ -36,3 +36,14 @@ export const useUpdateHealthRecord = () => {
     },
   });
 };
+
+export const useDeleteHealthRecord = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: healthRecordsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["health-records"] });
+    },
+  });
+};

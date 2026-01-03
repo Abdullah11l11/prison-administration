@@ -31,3 +31,14 @@ export const useUpdateIncident = () => {
     },
   });
 };
+
+export const useDeleteIncident = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: incidentsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["incidents"] });
+    },
+  });
+};

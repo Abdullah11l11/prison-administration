@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Visit } from "@/types";
-import { useVisits } from "./hooks";
+import { useDeleteVisit, useVisits } from "./hooks";
 import {
   Table,
   TableBody,
@@ -27,8 +27,10 @@ export function VisitsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingVisit, setEditingVisit] = useState<Visit | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const { data: visits, isLoading, error } = useVisits();
+  const { mutateAsync: deleteVisit } = useDeleteVisit();
 
   const filteredVisits = useMemo(() => {
     if (!visits) return [];
@@ -126,17 +128,45 @@ export function VisitsPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">{visit.notes || '-'}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingVisit(visit);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingVisit(visit);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete visit "${visit.visitId}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(visit.id);
+                              await deleteVisit(visit.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === visit.id}
+                        >
+                          {deletingId === visit.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

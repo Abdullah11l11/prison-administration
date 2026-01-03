@@ -16,4 +16,8 @@ export const healthRecordsApi = {
     const response = await apiClient.patch<HealthRecord>(`/api/health-records/${id}`, payload);
     return response.data;
   },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/api/health-records/${id}`);
+  },
 };

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Incident } from "@/types";
-import { useIncidents } from "./hooks";
+import { useDeleteIncident, useIncidents } from "./hooks";
 import {
   Table,
   TableBody,
@@ -27,8 +27,10 @@ export function IncidentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIncident, setEditingIncident] = useState<Incident | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const { data: incidents, isLoading, error } = useIncidents();
+  const { mutateAsync: deleteIncident } = useDeleteIncident();
 
   const filteredIncidents = useMemo(() => {
     if (!incidents) return [];
@@ -144,17 +146,45 @@ export function IncidentsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingIncident(incident);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingIncident(incident);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete incident "${incident.incidentId}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(incident.id);
+                              await deleteIncident(incident.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === incident.id}
+                        >
+                          {deletingId === incident.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

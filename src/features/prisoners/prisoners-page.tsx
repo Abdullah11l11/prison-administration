@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Prisoner } from "@/types";
-import { usePrisoners } from "./hooks";
+import { useDeletePrisoner, usePrisoners } from "./hooks";
 import { PrisonerDetails } from "./prisoner-details";
 import { PrisonerFormDialog } from "./prisoner-form-dialog";
 import {
@@ -34,6 +34,8 @@ export function PrisonersPage() {
   const [editingPrisoner, setEditingPrisoner] = useState<Prisoner | null>(
     null
   );
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const { mutateAsync: deletePrisoner } = useDeletePrisoner();
 
   const filteredPrisoners = useMemo(() => {
     if (!prisoners) return [];
@@ -168,18 +170,47 @@ export function PrisonersPage() {
                     </TableCell>
                     <TableCell>{prisoner.currentCellId}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setEditingPrisoner(prisoner);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setEditingPrisoner(prisoner);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async (event) => {
+                            event.stopPropagation();
+                            if (
+                              !window.confirm(
+                                `Delete prisoner "${prisoner.fullName}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(prisoner.id);
+                              await deletePrisoner(prisoner.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === prisoner.id}
+                        >
+                          {deletingId === prisoner.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

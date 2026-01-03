@@ -9,6 +9,17 @@ export const useStaff = () => {
   });
 };
 
+export const useDeleteStaff = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: staffApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    },
+  });
+};
+
 export const useCreateStaff = () => {
   const queryClient = useQueryClient();
 

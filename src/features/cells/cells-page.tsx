@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Cell } from "@/types";
-import { useCells } from "./hooks";
+import { useCells, useDeleteCell } from "./hooks";
 import {
   Table,
   TableBody,
@@ -26,8 +26,10 @@ export function CellsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCell, setEditingCell] = useState<Cell | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const { data: cells, isLoading, error } = useCells();
+  const { mutateAsync: deleteCell } = useDeleteCell();
 
   const filteredCells = useMemo(() => {
     if (!cells) return [];
@@ -128,17 +130,45 @@ export function CellsPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">{cell.notes || '-'}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingCell(cell);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingCell(cell);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete cell "${cell.cellNumber}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(cell.id);
+                              await deleteCell(cell.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === cell.id}
+                        >
+                          {deletingId === cell.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -16,4 +16,8 @@ export const cellsApi = {
     const response = await apiClient.patch<Cell>(`/api/cells/${id}`, payload);
     return response.data;
   },
+
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/api/cells/${id}`);
+  },
 };

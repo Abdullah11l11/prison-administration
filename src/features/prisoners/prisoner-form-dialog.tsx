@@ -19,6 +19,7 @@ import {
   statusOptions,
 } from "@/schema/prisoner-schema";
 import { usePrisonerForm } from "@/hooks/use-prisoner-form";
+import { useCells } from "@/features/cells/hooks";
 
 interface PrisonerFormDialogProps {
   open: boolean;
@@ -33,6 +34,9 @@ export function PrisonerFormDialog({
   prisoner,
   onClose,
 }: PrisonerFormDialogProps) {
+  const { data: cells, isLoading: cellsLoading } = useCells();
+  const hasAvailableCell =
+    cells?.some((cell) => cell.currentOccupancy < cell.capacity) ?? false;
   const {
     register,
     handleSubmit,
@@ -67,17 +71,6 @@ export function PrisonerFormDialog({
           noValidate
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Prisoner ID" error={errors.prisonerId?.message}>
-              <Input
-                id="prisonerId"
-                type="number"
-                placeholder="Enter prisoner ID"
-                inputMode="numeric"
-                {...register("prisonerId", { valueAsNumber: true })}
-                aria-invalid={!!errors.prisonerId}
-              />
-            </FormField>
-
             <FormField label="National ID" error={errors.nationalId?.message}>
               <Input
                 id="nationalId"
@@ -153,14 +146,36 @@ export function PrisonerFormDialog({
               label="Current cell"
               error={errors.currentCellId?.message}
             >
-              <Input
+              <select
                 id="currentCellId"
-                type="number"
-                placeholder="e.g. 4"
-                inputMode="numeric"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 {...register("currentCellId", { valueAsNumber: true })}
                 aria-invalid={!!errors.currentCellId}
-              />
+                disabled={cellsLoading || !cells?.length}
+              >
+                {cells?.map((cell) => {
+                  const isFull = cell.currentOccupancy >= cell.capacity;
+                  const isCurrent = prisoner?.currentCellId === cell.cellId;
+                  const label = `${cell.cellNumber} (Block ${cell.blockName}) - ${cell.currentOccupancy}/${cell.capacity}${isFull ? " Full" : ""}`;
+                  return (
+                    <option
+                      key={cell.id}
+                      value={cell.cellId}
+                      disabled={isFull && !isCurrent}
+                    >
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+              {!cellsLoading && !cells?.length && (
+                <p className="text-sm text-destructive">No cells available.</p>
+              )}
+              {!cellsLoading && !hasAvailableCell && mode === "create" && (
+                <p className="text-sm text-destructive">
+                  No cells have capacity. Add capacity before assigning a prisoner.
+                </p>
+              )}
             </FormField>
 
             <div className="sm:col-span-2">
@@ -186,7 +201,13 @@ export function PrisonerFormDialog({
             <Button type="button" variant="ghost" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={
+                isSubmitting ||
+                (!cellsLoading && mode === "create" && !hasAvailableCell)
+              }
+            >
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
               )}

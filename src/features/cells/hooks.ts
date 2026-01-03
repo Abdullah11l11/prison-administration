@@ -31,3 +31,14 @@ export const useUpdateCell = () => {
     },
   });
 };
+
+export const useDeleteCell = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cellsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cells"] });
+    },
+  });
+};

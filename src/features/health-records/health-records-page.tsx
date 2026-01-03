@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { HealthRecord } from "@/types";
-import { useHealthRecords } from "./hooks";
+import { useDeleteHealthRecord, useHealthRecords } from "./hooks";
 import {
   Table,
   TableBody,
@@ -27,8 +27,10 @@ export function HealthRecordsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<HealthRecord | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const { data: healthRecords, isLoading, error } = useHealthRecords();
+  const { mutateAsync: deleteRecord } = useDeleteHealthRecord();
 
   const filteredRecords = useMemo(() => {
     if (!healthRecords) return [];
@@ -127,17 +129,45 @@ export function HealthRecordsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingRecord(record);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" aria-hidden />
-                        Edit
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingRecord(record);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete health record "${record.healthRecordId}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(record.id);
+                              await deleteRecord(record.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === record.id}
+                        >
+                          {deletingId === record.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

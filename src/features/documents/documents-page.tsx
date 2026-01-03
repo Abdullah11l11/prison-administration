@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '@/lib/api-client';
-import type { Document } from '@/types';
+import { useMemo, useState } from "react";
+import type { Document } from "@/types";
+import { useDeleteDocument, useDocuments } from "./hooks";
 import {
   Table,
   TableBody,
@@ -8,24 +8,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, AlertCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
-import { formatDateTime } from '@/lib/utils';
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Loader2, Pencil, Plus, Search } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
+import { DocumentFormDialog } from "./document-form-dialog";
 
 export function DocumentsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingDocument, setEditingDocument] = useState<Document | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const { data: documents, isLoading, error } = useQuery({
-    queryKey: ['documents'],
-    queryFn: async () => {
-      const response = await apiClient.get<Document[]>('/api/documents');
-      return response.data;
-    },
-  });
+  const { data: documents, isLoading, error } = useDocuments();
+  const { mutateAsync: deleteDocument } = useDeleteDocument();
 
   const filteredDocuments = useMemo(() => {
     if (!documents) return [];
@@ -63,8 +68,8 @@ export function DocumentsPage() {
           <CardDescription>Document repository and file management</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <div className="relative">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by type or file path..."
@@ -73,6 +78,15 @@ export function DocumentsPage() {
                 className="pl-8"
               />
             </div>
+            <Button
+              onClick={() => {
+                setEditingDocument(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" aria-hidden />
+              Add Document
+            </Button>
           </div>
 
           {isLoading ? (
@@ -94,6 +108,7 @@ export function DocumentsPage() {
                   <TableHead>File Path</TableHead>
                   <TableHead>Uploaded By</TableHead>
                   <TableHead>Upload Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -110,6 +125,47 @@ export function DocumentsPage() {
                     </TableCell>
                     <TableCell>{doc.uploadedBy}</TableCell>
                     <TableCell>{formatDateTime(doc.uploadedAt)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingDocument(doc);
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" aria-hidden />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={async () => {
+                            if (
+                              !window.confirm(
+                                `Delete document "${doc.documentId}"? This cannot be undone.`
+                              )
+                            ) {
+                              return;
+                            }
+                            try {
+                              setDeletingId(doc.id);
+                              await deleteDocument(doc.id);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === doc.id}
+                        >
+                          {deletingId === doc.id && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                          )}
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -117,6 +173,16 @@ export function DocumentsPage() {
           )}
         </CardContent>
       </Card>
+
+      <DocumentFormDialog
+        open={dialogOpen}
+        mode={editingDocument ? "edit" : "create"}
+        document={editingDocument}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditingDocument(null);
+        }}
+      />
     </div>
   );
 }

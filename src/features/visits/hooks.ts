@@ -31,3 +31,14 @@ export const useUpdateVisit = () => {
     },
   });
 };
+
+export const useDeleteVisit = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: visitsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["visits"] });
+    },
+  });
+};

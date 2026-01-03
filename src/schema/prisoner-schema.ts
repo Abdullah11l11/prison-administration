@@ -10,10 +10,6 @@ export const statusOptions = [
 ] as const;
 
 export const prisonerFormSchema = z.object({
-  prisonerId: z
-    .number("Prisoner ID is required")
-    .int("Prisoner ID must be a whole number")
-    .min(1, "Prisoner ID is required"),
   fullName: z.string().min(2, "Full name is required"),
   nationalId: z.string().min(3, "National ID is required"),
   gender: z.enum(genderOptions, { message: "Gender is required" }),

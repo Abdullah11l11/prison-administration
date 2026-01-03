@@ -6,6 +6,7 @@ import {
   useCreatePrisoner,
   useUpdatePrisoner,
 } from "@/features/prisoners/hooks";
+import { useCells } from "@/features/cells/hooks";
 import {
   genderOptions,
   prisonerFormSchema,
@@ -22,7 +23,6 @@ interface UsePrisonerFormOptions {
 }
 
 const getDefaultValues = (prisoner: Prisoner | null) => ({
-  prisonerId: prisoner?.prisonerId,
   fullName: prisoner?.fullName ?? "",
   nationalId: prisoner?.nationalId ?? "",
   gender:
@@ -35,7 +35,7 @@ const getDefaultValues = (prisoner: Prisoner | null) => ({
   riskLevel:
     (prisoner?.riskLevel as (typeof riskOptions)[number] | undefined) ??
     "Medium",
-  currentCellId: prisoner?.currentCellId,
+  currentCellId: prisoner?.currentCellId ?? 0,
   notes: prisoner?.notes ?? "",
 });
 
@@ -46,8 +46,27 @@ export function usePrisonerForm({
   onClose,
 }: UsePrisonerFormOptions) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const { data: cells } = useCells();
 
-  const defaultValues = useMemo(() => getDefaultValues(prisoner), [prisoner]);
+  const availableCells = useMemo(
+    () => cells?.filter((cell) => cell.currentOccupancy < cell.capacity) ?? [],
+    [cells]
+  );
+
+  const firstAvailableCellId = useMemo(() => {
+    if (prisoner?.currentCellId) return prisoner.currentCellId;
+    if (availableCells.length) return availableCells[0].cellId;
+    return cells?.[0]?.cellId ?? 0;
+  }, [availableCells, cells, prisoner?.currentCellId]);
+
+  const defaultValues = useMemo(
+    () =>
+      ({
+        ...getDefaultValues(prisoner),
+        currentCellId: firstAvailableCellId,
+      } satisfies PrisonerFormValues),
+    [firstAvailableCellId, prisoner]
+  );
 
   const form = useForm<PrisonerFormValues, unknown, PrisonerFormValues>({
     resolver: zodResolver(prisonerFormSchema),
@@ -68,7 +87,26 @@ export function usePrisonerForm({
 
   const onSubmit = async (values: PrisonerFormValues) => {
     setSubmitError(null);
-    const payload = { ...values, notes: values.notes ?? "" };
+    const payload = {
+      ...values,
+      prisonerId: prisoner?.prisonerId ?? Math.floor(Date.now() / 1000),
+      currentCellId: values.currentCellId,
+      notes: values.notes ?? "",
+    };
+
+    const selectedCell = cells?.find(
+      (cell) => cell.cellId === payload.currentCellId
+    );
+    const isEditingSameCell =
+      prisoner?.currentCellId && prisoner.currentCellId === payload.currentCellId;
+    if (
+      selectedCell &&
+      selectedCell.currentOccupancy >= selectedCell.capacity &&
+      !isEditingSameCell
+    ) {
+      setSubmitError("Selected cell has no available capacity. Choose another cell.");
+      return;
+    }
 
     try {
       if (mode === "create") {
